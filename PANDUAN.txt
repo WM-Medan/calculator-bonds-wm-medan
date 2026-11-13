@@ -1,0 +1,22 @@
+CALCULATOR BONDS WM MEDAN - VERSI MANDIRI (bisa dibuka di iPhone, Android, laptop)
+
+ISI FOLDER
+- index.html : calculator (Rekomendasi, Kalkulator Beli, Kalkulator Jual, ekspor PDF)
+- data.json  : harga harian yang dibaca semua PBO (sekarang masih per 9 Nov 2026 - WAJIB diganti)
+
+PASANG SEKALI
+1. Unggah index.html dan data.json ke hosting web (satu folder yang sama).
+2. Bagikan link index.html ke PBO. PBO tidak perlu login.
+
+UPDATE HARIAN (oleh Anda)
+1. Buka  <link-anda>/index.html?admin   (tombol "Upload Excel" muncul hanya dengan ?admin)
+2. Klik Upload Excel, pilih file Bonds Calculator <tanggal>.xlsx
+   (pertahankan tanggal di nama file, mis. "Bonds Calculator 13 November 2026.xlsx")
+3. File data.json otomatis terunduh. Ganti data.json lama di hosting dengan file itu.
+4. Selesai. PBO yang membuka ulang halaman langsung memakai harga baru.
+
+CATATAN
+- Jika harga lebih dari 3 hari tidak diperbarui, muncul peringatan merah di header.
+- Jika data.json tidak terbaca, halaman memakai data bawaan dan menampilkan peringatan merah.
+- Ekspor PDF memakai pustaka dari internet (cdnjs/jsdelivr). Jika jaringan kantor memblokirnya,
+  gunakan menu Ekspor > "Cetak / Simpan PDF" (di iPhone: Bagikan > Simpan ke File).
