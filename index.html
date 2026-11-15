@@ -2971,7 +2971,7 @@ window.WMX=(function(){
     document.body.appendChild(fr);
     try{
       var doc=fr.contentDocument; doc.open();
-      doc.write('<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><style>'+css+'</style><style>html,body{margin:0;background:#fff!important;overflow:visible}body{display:block!important}#reportPaper,#reportPaper.landscape{width:auto!important;min-height:0!important;padding:0!important;margin:0!important;box-shadow:none!important;background:#fff}</style></head><body><div id="reportPaper" class="'+(land?'landscape':'')+'">'+src.innerHTML+'</div></body></html>');
+      doc.write('<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><style>'+css+'</style><style>'+(onePage==='buy'?'#reportPaper .rep-grid.c3{grid-template-columns:repeat(3,1fr)!important}#reportPaper .rep-two{grid-template-columns:1fr 1fr!important}':'')+'html,body{margin:0;background:#fff!important;overflow:visible}body{display:block!important}#reportPaper,#reportPaper.landscape{width:auto!important;min-height:0!important;padding:0!important;margin:0!important;box-shadow:none!important;background:#fff}</style></head><body><div id="reportPaper" class="'+(land?'landscape':'')+'">'+src.innerHTML+'</div></body></html>');
       doc.close();
       await new Promise(function(r){ setTimeout(r,250); });
       var paper=doc.getElementById('reportPaper'); var total=Math.ceil(paper.getBoundingClientRect().height);
@@ -3018,7 +3018,7 @@ window.WMX=(function(){
     try{
       toast('Menyiapkan PDF…');
       var R=renderNow(page); await loadPdfLib();
-      var blob=await makePdfBlob(R,page==='buy'||page==='sell');
+      var blob=await makePdfBlob(R,page==='buy'||page==='sell'?page:false);
       var ok=await saveFile(fname(page),blob);
       toast(ok?'✅ PDF dibuat':'Unduhan dibatalkan');
     }catch(e){ toast('❌ Gagal membuat PDF: '+(e&&e.message?e.message:e)); }
