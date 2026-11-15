@@ -2961,7 +2961,7 @@ window.WMX=(function(){
     pages.push([start,Math.max(total,start+1)]);
     return pages;
   }
-  async function makePdfBlob(R){
+  async function makePdfBlob(R,onePage){
     var src=document.getElementById('reportPaper'), land=!!R.landscape;
     var mm=land?10:12, pageW=land?297:210, pageH=land?210:297;
     var cw=Math.round((pageW-2*mm)*PXMM), Hc=(pageH-2*mm)*PXMM;
@@ -2980,6 +2980,11 @@ window.WMX=(function(){
       var scale=2, canvas=await window.html2canvas(paper,{scale:scale,backgroundColor:'#ffffff',useCORS:true,scrollX:0,scrollY:0,windowWidth:cw,windowHeight:total+4});
       var pdf=new window.jspdf.jsPDF({unit:'mm',format:'a4',orientation:land?'landscape':'portrait'});
       var kx=canvas.width/cw;                                   /* canvas px per layout px */
+      if(onePage){   /* Beli/Jual: seluruh laporan dipaksa 1 halaman — diperkecil proporsional bila lebih tinggi dari halaman */
+        var aw=pageW-2*mm, ah=pageH-2*mm, ih=canvas.height/kx/PXMM, k=Math.min(1,ah/ih), w1=aw*k, h1=ih*k;
+        pdf.addImage(canvas.toDataURL('image/jpeg',0.95),'JPEG',mm+(aw-w1)/2,mm,w1,h1);
+        WMX_last=[[0,total]]; return pdf.output('blob');
+      }
       pages.forEach(function(pg,idx){
         var y0=Math.round(pg[0]*kx), hh=Math.min(canvas.height-y0,Math.round((pg[1]-pg[0])*kx)); if(hh<1) return;
         var sl=document.createElement('canvas'); sl.width=canvas.width; sl.height=hh; var cx=sl.getContext('2d');
@@ -3013,7 +3018,7 @@ window.WMX=(function(){
     try{
       toast('Menyiapkan PDF…');
       var R=renderNow(page); await loadPdfLib();
-      var blob=await makePdfBlob(R);
+      var blob=await makePdfBlob(R,page==='buy'||page==='sell');
       var ok=await saveFile(fname(page),blob);
       toast(ok?'✅ PDF dibuat':'Unduhan dibatalkan');
     }catch(e){ toast('❌ Gagal membuat PDF: '+(e&&e.message?e.message:e)); }
