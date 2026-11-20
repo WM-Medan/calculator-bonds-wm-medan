@@ -1681,7 +1681,7 @@ function rebuildEnriched(){
   STATE.enriched=STATE.calcBonds.filter(b=>b.price!=null);
 }
 function renderAll(){ applyFilters(); renderDeposit(); renderBuy(); renderSell();
-  document.getElementById('asOfLabel').textContent=(STATE.lang==='id'?'Per ':'As of ')+STATE.asOf+(STATE.session?' · '+(STATE.lang==='id'?STATE.session:STATE.session.replace(/^Sesi/i,'Session')):'')+' · '+STATE.enriched.length+' '+(STATE.lang==='id'?'seri':'series'); }
+  document.getElementById('asOfLabel').textContent=(STATE.lang==='id'?'Per ':'As of ')+STATE.asOf+(STATE.session?' · '+(STATE.lang==='id'?STATE.session:STATE.session.replace(/^Sesi/i,'Session')):'')+' · '+STATE.bonds.length+' '+(STATE.lang==='id'?'seri':'series')+' ('+STATE.enriched.length+(STATE.lang==='id'?' berharga':' priced')+')'; }
 function refreshSelectsPreserve(){
   const ccys=[...new Set(STATE.enriched.map(b=>b.ccy))].sort();
   const tens=[...new Set(STATE.enriched.map(b=>b.tenorName).filter(Boolean))];
