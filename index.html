@@ -1119,6 +1119,11 @@ function classifyType(seri){
 function priceCategory(px){ if(px==null) return "-"; if(px>100.01) return "Premium"; if(px<99.99) return "Discount"; return "Par"; }
 function catLabel(c){ return c==="Premium"?t("cat_prem"):c==="Par"?t("cat_par"):c==="Discount"?t("cat_disc"):c; }
 
+/* Harga/persen: koma ATAU titik dianggap desimal (keypad iPhone berbahasa Indonesia hanya punya koma). */
+function numD(v){ if(v==null||v==="") return null; let s=String(v).replace(/\s/g,''); const c=s.lastIndexOf(','), d=s.lastIndexOf('.');
+  if(c>=0&&d>=0){ s=c>d? s.replace(/\./g,'').replace(',','.') : s.replace(/,/g,''); }
+  else if(c>=0){ s=(s.match(/,/g).length>1)? s.replace(/,/g,'') : s.replace(',','.'); }
+  const n=Number(s); return isFinite(n)?n:null; }
 function num(v){ if(v==null||v==="") return null; const n=Number(String(v).replace(/[,\s]/g,'')); return isFinite(n)?n:null; }
 function fmtN(v,d=0){ if(v==null||!isFinite(v)) return "—"; return v.toLocaleString(loc(),{minimumFractionDigits:d,maximumFractionDigits:d}); }
 function fmtPct(v,d=2){ if(v==null||!isFinite(v)) return "—"; return (v*100).toLocaleString(loc(),{minimumFractionDigits:d,maximumFractionDigits:d})+"%"; }
@@ -1312,13 +1317,13 @@ function computeSell(inp){
     taxableGain,netCapGain,nMat,totalCpnMat,monthsMat,redeemValueMat,capTaxMat,netReturnMat,totalReceivedMat,netPerMonthMat,eqAnnualMat,eqDepositMat};
 }
 function readBuyInputs(){ return {seri:bBond.value,nominal:num(bNominal.value),trade:bTrade.value,settleN:+(document.getElementById('bSettle')||{value:DEFAULT_SETTLE}).value,tier:(document.getElementById('bTier')||{value:'PRIORITY'}).value,
-  price:num(bPrice.value),redeem:num(bRedeem.value)}; }
-function readSellInputs(){ return {seri:sBond.value,nominal:num(sNominal.value),buyDate:sBuyDate.value,buyPrice:num(sBuyPrice.value),
-  sellDate:sSellDate.value,sellPrice:num(sSellPrice.value),settleN:+(document.getElementById('sSettle')||{value:DEFAULT_SETTLE}).value,tier:(document.getElementById('sTier')||{value:'PRIORITY'}).value}; }
+  price:numD(bPrice.value),redeem:numD(bRedeem.value)}; }
+function readSellInputs(){ return {seri:sBond.value,nominal:num(sNominal.value),buyDate:sBuyDate.value,buyPrice:numD(sBuyPrice.value),
+  sellDate:sSellDate.value,sellPrice:numD(sSellPrice.value),settleN:+(document.getElementById('sSettle')||{value:DEFAULT_SETTLE}).value,tier:(document.getElementById('sTier')||{value:'PRIORITY'}).value}; }
 document.addEventListener('change',e=>{ if(e.target.id==='bTier') renderBuy(); else if(e.target.id==='sTier') renderSell(); });
 function computeDeposit(){
   const b=STATE.enriched.find(x=>x.seri===depBond.value); if(!b) return null;
-  const nominal=num(depNominal.value)||1e9, dr=(num(depRate.value)||0)/100, dtax=(num(depTax.value)||0)/100, months=num(depTenor.value)||12;
+  const nominal=num(depNominal.value)||1e9, dr=(numD(depRate.value)||0)/100, dtax=(numD(depTax.value)||0)/100, months=numD(depTenor.value)||12;
   const yrs=months/12, isIDR=b.ccy==='IDR';
   const depNet=nominal*dr*yrs*(1-dtax);
   const cpnNet=nominal*(b.coupon/100)*yrs*(isIDR?NET_FACTOR:1);
@@ -1572,7 +1577,7 @@ function renderReturnSummary(containerId,S,which){
       <textarea id="${which}Adv" style="width:100%;margin-top:6px;min-height:74px;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font:inherit;font-size:12.5px;line-height:1.55;color:var(--ink);resize:vertical">${cache.text.replace(/</g,'&lt;')}</textarea></div>
     </div></div>`;
   const pi=document.getElementById(which+'SumPrice');
-  pi.onchange=()=>{ const v=num(pi.value); if(v!=null){ document.getElementById(S.priceInputId).value=v; which==='buy'?renderBuy():renderSell(); } };
+  pi.onchange=()=>{ const v=numD(pi.value); if(v!=null){ document.getElementById(S.priceInputId).value=v; which==='buy'?renderBuy():renderSell(); } };
   const ta=document.getElementById(which+'Adv'); ta.oninput=()=>{ cache.text=ta.value; };
   const ck=document.getElementById(which+'InvSum'); ck.onchange=()=>{ INV_SUM[which]=ck.checked; ck.closest('.inv-box').querySelector('.inv-body').classList.toggle('hidden',!ck.checked); };
 }
